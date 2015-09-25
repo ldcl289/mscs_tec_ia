@@ -3,6 +3,7 @@ class Node
   public int x, y;
   private boolean valid;
   public String label;
+  public boolean visited;
   Node()
   {
     valid = false;
@@ -15,5 +16,9 @@ class Node
   public boolean isValid()
   {
     return valid;
+  }
+  @Override public String toString()
+  {
+    return label;
   }
 }

@@ -5,24 +5,33 @@ class AgentTreeSearch
     this.problem = problem;
     this.strategy = strategy;
     root = new Tree(problem.startPoint);
+    current = root;
+    isEnd = false;
   }
-  boolean run()
+  public Node nextNode()
   {
-    return iterate(root);
-  }
-  boolean iterate(Tree current)
-  {
+    System.out.println("\nCurrent Node=["+current.data.toString()+"]");
     if(problem.isEndPoint(current.data))
-      return true;
+    {
+      isEnd = true;
+      return current.data;
+    }
     Vector<Node> adjacents = problem.graph.getAdjacentNodes(current.data);
     for(int i = 0 ; i < adjacents.size() ; i++)
       current.childs.add(new Tree(adjacents.elementAt(i)));
-    Tree next = strategy.get(current);
-    if(null == next)
-      return iterate(next);
-    return false;
+    current = strategy.get(current);
+    if(null != current)
+      return current.data;
+    isEnd = false;
+    return null;
+  }
+  public boolean isSearchEnd()
+  {
+    return isEnd;
   }
   private Problem problem;
   private Strategy strategy;
   private Tree root;
+  private Tree current;
+  private boolean isEnd;
 }
