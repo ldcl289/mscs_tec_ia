@@ -1,3 +1,6 @@
+//David Alfaro
+//LuisDiego Chavarria
+
 import java.util.*;
 
 int multiplier = 20;

@@ -1,3 +1,7 @@
+//Bryant Alvarez
+//David Alfaro
+//LuisDiego Chavarria Ledezma
+
 import java.util.*;
 
 int spaceSize = 100;
