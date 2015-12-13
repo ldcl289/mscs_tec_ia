@@ -15,8 +15,9 @@ public:
     static std::string south;
     static std::string west;
     static std::string invalid;
-    int x;
-    int y;
+
+    Coordinate(const Coordinate& current);
+    Coordinate(Coordinate* current);
     Coordinate(int x = -1, int y = -1);
     Coordinate& operator=(const Coordinate& a);
     Coordinate operator+(const Coordinate& a) const;
@@ -25,7 +26,16 @@ public:
     bool isValid();
     std::string getRelativity(const Coordinate& coordinate);
 
+    int x;
+    int y;
 };
-
+class CoordinateComparator
+{
+public:
+   bool operator() (const Coordinate& lhs, const Coordinate& rhs) const
+   {
+       return lhs.x < rhs.x && lhs.y < rhs.y;
+   }
+};
 
 #endif //WUMPUS_COORDINATE_H

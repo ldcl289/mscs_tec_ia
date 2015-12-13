@@ -11,6 +11,7 @@
 #include "Coordinate.h"
 #include "Space.h"
 
+typedef std::map<Coordinate*, bool> CoordinateMap;
 class BaseKnowledge
 {
 public:
@@ -31,6 +32,7 @@ private:
     void resolve(const Coordinate& current);
     void insert(const std::string& perception, const Coordinate& location, bool value);
     bool coordinateExistsForPerception(const std::string& perception, const Coordinate& location);
+    Coordinate* getCoordinatePointerForPerception(const std::string& perception, const Coordinate& location);
     bool isCoordinateVisited(const Coordinate& current);
     Coordinate getSafeNeighborhood(const Coordinate& current, bool (BaseKnowledge::*isCoordinateSafe)(const Coordinate&));
     bool isCoordinateProbablySafe(const Coordinate& current);
@@ -38,7 +40,7 @@ private:
     void markAsEmpty(const Coordinate& current);
 
     int size_;
-    std::map<std::string, std::map<Coordinate, bool>> bc_;
+    std::map<std::string, CoordinateMap> bc_;
 
 };
 

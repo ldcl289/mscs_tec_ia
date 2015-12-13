@@ -4,6 +4,7 @@
 
 #include "BaseKnowledge.h"
 #include <algorithm>
+#include <iostream>
 
 std::string BaseKnowledge::wumpus = "WUMPUS";
 std::string BaseKnowledge::stink = "STINK";
@@ -16,13 +17,13 @@ std::vector<std::string> BaseKnowledge::perceptions = {BaseKnowledge::wumpus, Ba
 
 BaseKnowledge::BaseKnowledge(int size) : size_(size)
 {
-    bc_[wumpus] = std::map<Coordinate, bool>();
-    bc_[stink] = std::map<Coordinate, bool>();
-    bc_[pit] = std::map<Coordinate, bool>();
-    bc_[wind] = std::map<Coordinate, bool>();
-    bc_[gold] = std::map<Coordinate, bool>();
-    bc_[visited] = std::map<Coordinate, bool>();
-    bc_[safe] = std::map<Coordinate, bool>();
+    bc_[wumpus] = CoordinateMap();
+    bc_[stink] = CoordinateMap();
+    bc_[pit] = CoordinateMap();
+    bc_[wind] = CoordinateMap();
+    bc_[gold] = CoordinateMap();
+    bc_[visited] = CoordinateMap();
+    bc_[safe] = CoordinateMap();
 }
 
 void BaseKnowledge::tell(const Space& current)
@@ -45,16 +46,18 @@ void BaseKnowledge::tell(const Space& current)
 
 void BaseKnowledge::insert(const std::string& perception, const Coordinate& location, bool value)
 {
-    bc_[perception][location] = value;
+    Coordinate* pointer = getCoordinatePointerForPerception(perception, location);
+    if(nullptr == pointer)
+    {
+        pointer = new Coordinate(location);
+    }
+    bc_[perception][pointer] = value;
+    std::cout<< perception << ": " << bc_[perception].size() << std::endl;
 }
 
 bool BaseKnowledge::coordinateExistsForPerception(const std::string& perception, const Coordinate& location)
 {
-    auto coordinate = std::find_if(bc_[perception].cbegin(), bc_[perception].cend(), [&location] (const std::pair<Coordinate, bool>& i)
-    {
-        return i.first.x == location.x && i.first.y == location.y;
-    });
-    return bc_[perception].cend() != coordinate;
+    return getCoordinatePointerForPerception(perception, location) != nullptr;
 }
 
 bool BaseKnowledge::isCoordinateVisited(const Coordinate& current)
@@ -117,31 +120,43 @@ Coordinate BaseKnowledge::getSafeNeighborhood(const Coordinate& current, bool (B
 
 void BaseKnowledge::resolve(const Coordinate& location)
 {
-    if(!bc_[wumpus][location] && !bc_[stink][location] && !bc_[pit][location] && !bc_[wind][location])
+    if(!coordinateExistsForPerception(wumpus, location) && !coordinateExistsForPerception(stink, location)
+        && !coordinateExistsForPerception(pit, location) && !coordinateExistsForPerception(wind, location))
         markAsEmpty(location);
 }
 
 void BaseKnowledge::markAsEmpty(const Coordinate& current)
 {
     insert(safe, current, true);
-    Coordinate safeCoordinate = current;
-    if(--safeCoordinate.x >= 0)
+    Coordinate safeCoordinateWest(current);
+    if(--safeCoordinateWest.x >= 0)
     {
-        insert(safe, safeCoordinate, true);
+        insert(safe, safeCoordinateWest, true);
     }
-    safeCoordinate = current;
-    if(++safeCoordinate.x < size_)
+    Coordinate safeCoordinateEast(current);
+    if(++safeCoordinateEast.x < size_)
     {
-        insert(safe, safeCoordinate, true);
+        insert(safe, safeCoordinateEast, true);
     }
-    safeCoordinate = current;
-    if(--safeCoordinate.y >= 0)
+    Coordinate safeCoordinateSouth(current);
+    if(--safeCoordinateSouth.y >= 0)
     {
-        insert(safe, safeCoordinate, true);
+        insert(safe, safeCoordinateSouth, true);
     }
-    safeCoordinate = current;
-    if(++safeCoordinate.y < size_)
+    Coordinate safeCoordinateNorth(current);
+    if(++safeCoordinateNorth.y < size_)
     {
-        insert(safe, safeCoordinate, true);
+        insert(safe, safeCoordinateNorth, true);
     }
+}
+
+Coordinate* BaseKnowledge::getCoordinatePointerForPerception(const std::string& perception, const Coordinate& location)
+{
+    auto coordinate = std::find_if(bc_[perception].cbegin(), bc_[perception].cend(), [&location] (const std::pair<Coordinate*, bool>& i)
+    {
+        return i.first->x == location.x && i.first->y == location.y;
+    });
+    if(bc_[perception].cend() != coordinate)
+        return coordinate->first;
+    return nullptr;
 }

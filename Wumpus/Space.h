@@ -17,6 +17,11 @@ public:
     Space()
     {
     }
+    Space(int x = -1, int y = -1)
+    {
+        location.x = x;
+        location.y = y;
+    }
 };
 
 

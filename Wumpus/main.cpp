@@ -11,7 +11,7 @@ std::vector<std::vector<Space>> buildMaze()
         maze.push_back(std::vector<Space>());
         for(int j = 0; j < 4; ++j)
         {
-            maze[i].push_back(Space());
+            maze[i].push_back(Space(i, j));
         }
     }
     maze[0][1].perceptions[BaseKnowledge::wind] = true;

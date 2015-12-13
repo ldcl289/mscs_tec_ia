@@ -46,3 +46,13 @@ std::string Coordinate::getRelativity(const Coordinate& coordinate)
         relativity = (coordinate.x > x) ? east : west;
     return relativity;
 }
+
+Coordinate::Coordinate(const Coordinate& current) : x(current.x), y(current.y)
+{
+
+}
+
+Coordinate::Coordinate(Coordinate* current) : x(current->x), y(current->y)
+{
+
+}
