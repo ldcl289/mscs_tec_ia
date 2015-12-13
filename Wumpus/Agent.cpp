@@ -5,7 +5,7 @@
 
 Agent::Agent(int size) : size_(size), bc_(size)
 {
-
+    Coordinate::size = size;
 }
 
 Action Agent::play(Space currentSpace)
@@ -19,15 +19,32 @@ Action Agent::play(Space currentSpace)
         return nextAction;
     }
 
-    Coordinate safeNeighborhood = bc_.getProbablySafeNeighborhood(currentSpace.location);
+    Coordinate safeNeighborhood = bc_.getSafeNeighborhood(currentSpace.location);
     if(safeNeighborhood.isValid())
     {
         buildActionPlan(currentSpace.location, safeNeighborhood);
+        Action nextAction;
+        nextAction = plan_.front();
+        plan_.pop();
+        return nextAction;
+    }
+    safeNeighborhood = bc_.getProbablySafeNeighborhood(currentSpace.location);
+    if(safeNeighborhood.isValid())
+    {
+        buildActionPlan(currentSpace.location, safeNeighborhood);
+        Action nextAction;
+        nextAction = plan_.front();
+        plan_.pop();
+        return nextAction;
     }
     safeNeighborhood = bc_.getPossiblySafeNeighborhood(currentSpace.location);
-    if(!safeNeighborhood.isValid())
+    if(safeNeighborhood.isValid())
     {
-
+        buildActionPlan(currentSpace.location, safeNeighborhood);
+        Action nextAction;
+        nextAction = plan_.front();
+        plan_.pop();
+        return nextAction;
     }
     Action nextAction;
     return nextAction;
@@ -36,5 +53,11 @@ Action Agent::play(Space currentSpace)
 
 void Agent::buildActionPlan(const Coordinate& current, const Coordinate& destiny)
 {
+    std::string direction = current.getReference(destiny);
+    plan_.push(Action(destiny, direction));
+}
 
+Coordinate Agent::getRandomNeighborhood(const Coordinate& current)
+{
+    return Coordinate(0, 0);
 }

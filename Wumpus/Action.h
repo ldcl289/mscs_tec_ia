@@ -14,12 +14,14 @@ class Action
 public:
     Action();
     Action(Coordinate coordinate);
+    Action(Coordinate coordinate, std::string direction);
     bool isGameFinished() const;
     Coordinate getLocation();
 
 private:
     Coordinate location_;
     bool isFinished_;
+    std::string direction_;
 };
 
 

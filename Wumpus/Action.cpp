@@ -23,3 +23,8 @@ Action::Action(Coordinate coordinate) : location_(coordinate), isFinished_(false
 {
 
 }
+
+Action::Action(Coordinate coordinate, std::string direction) : location_(coordinate), isFinished_(false), direction_(direction)
+{
+
+}

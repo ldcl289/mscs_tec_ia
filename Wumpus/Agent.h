@@ -22,6 +22,7 @@ public:
 
 private:
     void buildActionPlan(const Coordinate& current, const Coordinate& destiny);
+    Coordinate getRandomNeighborhood(const Coordinate& current);
 
     int size_;
     BaseKnowledge bc_;
