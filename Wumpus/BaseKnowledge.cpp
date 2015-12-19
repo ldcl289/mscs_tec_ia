@@ -52,6 +52,9 @@ void BaseKnowledge::tell(const Space& current)
 void BaseKnowledge::insert(const std::string &perception, Coordinate* location, bool value)
 {
     bc_[perception][location] = value;
+    if(bcPerCoordinate_.cend() == bcPerCoordinate_.find(location))
+        bcPerCoordinate_[location] = PerceptionMap();
+    bcPerCoordinate_[location][perception] = value;
 }
 
 bool BaseKnowledge::coordinateExistsForPerception(const std::string &perception, Coordinate *location)
@@ -145,11 +148,12 @@ void BaseKnowledge::resolve()
        && (!coordinateExistsForPerception(wind, current_) || !bc_[wind][current_]))
         markAsEmpty(current_);
     infer(stink, wumpus);
+    infer(wind, pit);
 }
 
 void BaseKnowledge::infer(const std::string& perception, const std::string& known)
 {
-    if(!coordinateExistsForPerception(perception, current_) || !bc_[perception][current_])
+    if(coordinateExistsForPerception(perception, current_) && bc_[perception][current_])
     {
         checkCoordinateCorner(perception, known, 1, 1);
         checkCoordinateCorner(perception, known, 1, -1);
@@ -161,19 +165,24 @@ void BaseKnowledge::infer(const std::string& perception, const std::string& know
 void BaseKnowledge::checkCoordinateCorner(const std::string& perception, const std::string& known, int x, int y)
 {
     Coordinate* corner = Coordinate::getCoordinate(current_->x + x, current_->y + y);
-    if(corner->isValid())
+    if(corner->isValid() && coordinateExistsForPerception(perception, corner) && bc_[perception][corner])
     {
-        Coordinate* horizontalAdjacent = Coordinate::getCoordinate(current_->x, current_->y + y);
-        Coordinate* verticalAdjacent = Coordinate::getCoordinate(current_->x + x, current_->y);
+        Coordinate* horizontalAdjacent = Coordinate::getCoordinate(current_->x + x, current_->y);
+        Coordinate* verticalAdjacent = Coordinate::getCoordinate(current_->x, current_->y + y);
         bool horizontalSafe = isCoordinateSafe(horizontalAdjacent);
         bool verticalSafe = isCoordinateSafe(verticalAdjacent);
-        if(coordinateExistsForPerception(perception, corner) && bc_[perception][corner]
-           && (horizontalSafe ^ verticalSafe))
+        if (horizontalSafe ^ verticalSafe)
         {
             if(horizontalSafe)
+            {
                 insert(known, verticalAdjacent, true);
+                insert(safe, verticalAdjacent, false);
+            }
             if(verticalSafe)
+            {
                 insert(known, horizontalAdjacent, true);
+                insert(safe, verticalAdjacent, false);
+            }
         }
     }
 }

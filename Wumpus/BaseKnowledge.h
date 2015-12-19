@@ -14,6 +14,7 @@
 #include "TreeSearch/ProblemRoute.h"
 
 typedef std::map<Coordinate*, bool> CoordinateMap;
+typedef std::map<std::string, bool> PerceptionMap;
 class BaseKnowledge
 {
 public:
@@ -52,6 +53,7 @@ private:
 
     int size_;
     std::map<std::string, CoordinateMap> bc_;
+    std::map<Coordinate*, PerceptionMap> bcPerCoordinate_;
     Coordinate* current_;
 
 };
