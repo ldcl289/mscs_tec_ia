@@ -5,7 +5,6 @@
 #ifndef WUMPUS_ACTION_H
 #define WUMPUS_ACTION_H
 
-#include <bits/stl_pair.h>
 #include "Space.h"
 
 class Action
@@ -13,13 +12,15 @@ class Action
     friend class Agent;
 public:
     Action();
-    Action(Coordinate coordinate);
-    Action(Coordinate coordinate, std::string direction);
+    Action(Coordinate* coordinate);
+    Action(Coordinate* coordinate, std::string direction);
     bool isGameFinished() const;
-    Coordinate getLocation();
+    Coordinate* getLocation();
+
+    std::string to_string();
 
 private:
-    Coordinate location_;
+    Coordinate* location_;
     bool isFinished_;
     std::string direction_;
 };

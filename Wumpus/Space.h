@@ -13,14 +13,12 @@ class Space
 {
 public:
     std::map<std::string, bool> perceptions;
-    Coordinate location;
+    Coordinate* location;
     Space()
     {
     }
-    Space(int x = -1, int y = -1)
+    Space(int x = -1, int y = -1) : location(Coordinate::getCoordinate(x, y))
     {
-        location.x = x;
-        location.y = y;
     }
 };
 

@@ -14,17 +14,23 @@ bool Action::isGameFinished() const
     return isFinished_;
 }
 
-Coordinate Action::getLocation()
+Coordinate* Action::getLocation()
 {
     return location_;
 }
 
-Action::Action(Coordinate coordinate) : location_(coordinate), isFinished_(false)
+Action::Action(Coordinate* coordinate) : location_(coordinate), isFinished_(false)
 {
 
 }
 
-Action::Action(Coordinate coordinate, std::string direction) : location_(coordinate), isFinished_(false), direction_(direction)
+Action::Action(Coordinate* coordinate, std::string direction) : location_(coordinate), isFinished_(false), direction_(direction)
 {
+
+}
+
+std::string Action::to_string()
+{
+    return "Direction=[" + direction_ + "], Coordinate=[" + location_->to_string() + "].";
 
 }

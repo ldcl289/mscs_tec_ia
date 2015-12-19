@@ -6,6 +6,7 @@
 #define WUMPUS_COORDINATE_H
 
 #include <string>
+#include <vector>
 
 class Coordinate
 {
@@ -17,19 +18,21 @@ public:
     const static std::string invalid;
     static int size;
 
-    Coordinate(const Coordinate& current);
-    Coordinate(Coordinate* current);
+    static Coordinate* getCoordinate(int x, int y);
+    static Coordinate* getInvalid();
+
     Coordinate(int x = -1, int y = -1);
-    Coordinate& operator=(const Coordinate& a);
-    Coordinate operator+(const Coordinate& a) const;
     bool operator==(const Coordinate& a) const;
     bool operator<(const Coordinate& a) const;
     bool isValid();
-    std::string getReference(const Coordinate& coordinate) const;
-    Coordinate getNeighborhoodByReference(const std::string& reference) const;
+    std::string getReference(Coordinate* coordinate) const;
+    Coordinate* getNeighborhoodByReference(const std::string &reference) const;
+    std::string to_string();
 
     int x;
     int y;
+private:
+    static std::vector<Coordinate*> coordinates_;
 };
 
 #endif //WUMPUS_COORDINATE_H

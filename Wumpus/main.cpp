@@ -39,17 +39,19 @@ int main()
     bool finished = false;
     Action currentAction;
     std::vector<std::vector<Space>> maze = buildMaze();
-    Coordinate currentLocation;
-    currentLocation.x = 0;
-    currentLocation.y = 0;
+    Coordinate* currentLocation = Coordinate::getCoordinate(0, 0);
     while(!finished)
     {
-        currentAction = wumpusGame.play(maze[currentLocation.x][currentLocation.y]);
+        std::cout << "===== [BEGIN] =====" << std::endl;
+        std::cout << "Current location=" << currentLocation->to_string() << std::endl;
+        currentAction = wumpusGame.play(maze[currentLocation->x][currentLocation->y]);
+        std::cout << "Current action=" << currentAction.to_string() << std::endl;
         if(currentAction.isGameFinished())
         {
             finished = true;
         }
         currentLocation = currentAction.getLocation();
+        std::cout << "====== [END] ======" << std::endl;
     }
 
 

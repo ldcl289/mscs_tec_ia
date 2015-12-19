@@ -21,8 +21,7 @@ public:
     Action play(Space currentSpace);
 
 private:
-    void buildActionPlan(const Coordinate& current, const Coordinate& destiny);
-    Coordinate getRandomNeighborhood(const Coordinate& current);
+    void buildActionPlan(Coordinate* current, Coordinate* destiny);
 
     int size_;
     BaseKnowledge bc_;
