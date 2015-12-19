@@ -12,8 +12,8 @@ class Action
     friend class Agent;
 public:
     Action();
-    Action(Coordinate* coordinate);
-    Action(Coordinate* coordinate, std::string direction);
+
+    Action(Coordinate* coordinate, Coordinate* finalDestiny, std::string direction);
     bool isGameFinished() const;
     Coordinate* getLocation();
 
@@ -21,6 +21,7 @@ public:
 
 private:
     Coordinate* location_;
+    Coordinate* destiny_;
     bool isFinished_;
     std::string direction_;
 };

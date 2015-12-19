@@ -28,21 +28,21 @@ public:
 
     BaseKnowledge(int size);
     void tell(const Space& current);
-    Coordinate* getProbablySafe(Coordinate* current);
-    Coordinate* getPossiblySafe(Coordinate* current);
-    Coordinate* getSafe(Coordinate* current);
-    Coordinate* genRandomMove(Coordinate* current);
+    Coordinate* getProbablySafe();
+    Coordinate* getPossiblySafe();
+    Coordinate* getSafe();
+    Coordinate* genRandomMove();
     Maze getMaze();
 private:
-    void resolve(Coordinate* current);
+    void resolve();
+    void infer(const std::string& perception, const std::string& known);
+    void checkCoordinateCorner(const std::string& perception, const std::string& known, int x, int y);
     void insert(const std::string &perception, Coordinate* location, bool value);
     bool coordinateExistsForPerception(const std::string &perception, Coordinate *location);
 
     bool isCoordinateVisited(Coordinate* current);
-    Coordinate* getSafe(Coordinate* current, bool (BaseKnowledge::*isCoordinateSafe)(Coordinate* ));
-    Coordinate* getSafeCoordinateForReference(const Coordinate *current,
-                                              bool (BaseKnowledge::*isCoordinateSafe)(Coordinate* ),
-                                              const std::string &reference);
+    Coordinate* getSafe(bool (BaseKnowledge::*isCoordinateSafe)(Coordinate*));
+    Coordinate* getSafeCoordinateForReference(bool (BaseKnowledge::*isCoordinateSafe)(Coordinate*), const std::string& reference);
     bool isCoordinateProbablySafe(Coordinate* current);
     bool isCoordinatePossiblySafe(Coordinate* current);
     bool isCoordinateSafe(Coordinate* current);
@@ -52,6 +52,7 @@ private:
 
     int size_;
     std::map<std::string, CoordinateMap> bc_;
+    Coordinate* current_;
 
 };
 

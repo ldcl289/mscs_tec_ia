@@ -15,29 +15,20 @@ Action Agent::play(Space currentSpace)
     bc_.tell(currentSpace);
     if(plan_.empty())
     {
-        Coordinate* safeNeighborhood = bc_.getSafe(currentSpace.location);
-        if(safeNeighborhood->isValid())
-            buildActionPlan(currentSpace.location, safeNeighborhood);
-        else
+        Coordinate* neighborhood = bc_.getSafe();
+        if(!neighborhood->isValid())
         {
-            safeNeighborhood = bc_.getProbablySafe(currentSpace.location);
-            if(safeNeighborhood->isValid())
-                buildActionPlan(currentSpace.location, safeNeighborhood);
-            else
+            neighborhood = bc_.getProbablySafe();
+            if(!neighborhood->isValid())
             {
-                safeNeighborhood = bc_.getPossiblySafe(currentSpace.location);
-                if(safeNeighborhood->isValid())
-                    buildActionPlan(currentSpace.location, safeNeighborhood);
-                else
-                {
-                    Coordinate* randomMove = bc_.genRandomMove(currentSpace.location);
-                    buildActionPlan(currentSpace.location, randomMove);
-                }
+                neighborhood = bc_.getPossiblySafe();
+                if(!neighborhood->isValid())
+                    neighborhood = bc_.genRandomMove();
             }
         }
+        buildActionPlan(currentSpace.location, neighborhood);
     }
-    Action nextAction;
-    nextAction = plan_.front();
+    Action nextAction = plan_.front();
     plan_.pop();
     return nextAction;
 }
@@ -60,7 +51,7 @@ void Agent::buildActionPlan(Coordinate* current, Coordinate* destiny)
     {
         next = Coordinate::getCoordinate(path[i]->x, path[i]->y);
         std::string direction = current->getReference(next);
-        plan_.push(Action(next, direction));
+        plan_.push(Action(next, destiny, direction));
         current = next;
     }
 
