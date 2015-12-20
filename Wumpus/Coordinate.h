@@ -11,11 +11,11 @@
 class Coordinate
 {
 public:
-    const static std::string north;
-    const static std::string east;
-    const static std::string south;
-    const static std::string west;
-    const static std::string invalid;
+    const static std::string NORTH;
+    const static std::string EAST;
+    const static std::string SOUTH;
+    const static std::string WEST;
+    const static std::string INVALID;
     static int size;
 
     static Coordinate* getCoordinate(int x, int y);

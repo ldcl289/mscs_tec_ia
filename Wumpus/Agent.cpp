@@ -13,24 +13,33 @@ Agent::Agent(int size) : size_(size), bc_(size)
 Action Agent::play(Space currentSpace)
 {
     bc_.tell(currentSpace);
-    if(plan_.empty())
+    bool isGameFinished = bc_.isGameOver() || bc_.isGameWon();
+    if(!isGameFinished)
     {
-        Coordinate* neighborhood = bc_.getSafe();
-        if(!neighborhood->isValid())
+        if(plan_.empty())
         {
-            neighborhood = bc_.getProbablySafe();
+            Coordinate* neighborhood = bc_.getSafe();
             if(!neighborhood->isValid())
             {
-                neighborhood = bc_.getPossiblySafe();
+                neighborhood = bc_.getProbablySafe();
                 if(!neighborhood->isValid())
-                    neighborhood = bc_.genRandomMove();
+                {
+                    neighborhood = bc_.getPossiblySafe();
+                    if(!neighborhood->isValid())
+                        neighborhood = bc_.genRandomMove();
+                }
             }
+            buildActionPlan(currentSpace.location, neighborhood);
         }
-        buildActionPlan(currentSpace.location, neighborhood);
+        Action nextAction = plan_.front();
+        plan_.pop();
+        nextAction.isFinished_ = isGameFinished;
+        return nextAction;
     }
-    Action nextAction = plan_.front();
-    plan_.pop();
-    return nextAction;
+    Action lastAction;
+    lastAction.isFinished_ = isGameFinished;
+    lastAction.location_ = currentSpace.location;
+    return lastAction;
 }
 
 

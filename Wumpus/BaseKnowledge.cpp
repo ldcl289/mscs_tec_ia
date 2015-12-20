@@ -6,47 +6,48 @@
 #include <algorithm>
 #include <iostream>
 
-const std::string BaseKnowledge::wumpus = "WUMPUS";
-const std::string BaseKnowledge::stink = "STINK";
-const std::string BaseKnowledge::pit = "PIT";
-const std::string BaseKnowledge::wind = "WIND";
-const std::string BaseKnowledge::gold = "GOLD";
-const std::string BaseKnowledge::visited = "VISITED";
-const std::string BaseKnowledge::safe = "SAFE";
-const std::vector<std::string> BaseKnowledge::perceptions = {BaseKnowledge::wumpus, BaseKnowledge::stink, BaseKnowledge::pit, BaseKnowledge::wind, BaseKnowledge::gold};
+const std::string BaseKnowledge::WUMPUS = "WUMPUS";
+const std::string BaseKnowledge::STINK = "STINK";
+const std::string BaseKnowledge::PIT = "PIT";
+const std::string BaseKnowledge::WIND = "WIND";
+const std::string BaseKnowledge::GOLD = "GOLD";
+const std::string BaseKnowledge::VISITED = "VISITED";
+const std::string BaseKnowledge::SAFE = "SAFE";
+const std::vector<std::string> BaseKnowledge::PERCEPTIONS = {BaseKnowledge::WUMPUS, BaseKnowledge::STINK, BaseKnowledge::PIT, BaseKnowledge::WIND, BaseKnowledge::GOLD};
 
-BaseKnowledge::BaseKnowledge(int size) : size_(size)
+BaseKnowledge::BaseKnowledge(int size) : size_(size), status_(ONGOING)
 {
-    bc_[wumpus] = CoordinateMap();
-    bc_[stink] = CoordinateMap();
-    bc_[pit] = CoordinateMap();
-    bc_[wind] = CoordinateMap();
-    bc_[gold] = CoordinateMap();
-    bc_[visited] = CoordinateMap();
-    bc_[safe] = CoordinateMap();
+    bc_[WUMPUS] = CoordinateMap();
+    bc_[STINK] = CoordinateMap();
+    bc_[PIT] = CoordinateMap();
+    bc_[WIND] = CoordinateMap();
+    bc_[GOLD] = CoordinateMap();
+    bc_[VISITED] = CoordinateMap();
+    bc_[SAFE] = CoordinateMap();
 }
 
 void BaseKnowledge::tell(const Space& current)
 {
     current_ = current.location;
-    const std::map<Coordinate*, bool>::iterator &itr = bc_[visited].find(current_);
-    if(bc_[visited].cend() == itr || !itr->second)
+    const std::map<Coordinate*, bool>::iterator &itr = bc_[VISITED].find(current_);
+    if(bc_[VISITED].cend() == itr || !itr->second)
     {
-        if(!current.perceptions.empty())
+        if (!current.perceptions.empty())
         {
-            for(int i = 0 ; i < perceptions.size() ; ++i)
+            for (int i = 0; i < PERCEPTIONS.size(); ++i)
             {
-                auto j = current.perceptions.find(perceptions[i]);
-                if(current.perceptions.cend() == j)
-                    insert(perceptions[i], current_, false);
+                auto j = current.perceptions.find(PERCEPTIONS[i]);
+                if (current.perceptions.cend() == j)
+                    insert(PERCEPTIONS[i], current_, false);
                 else
-                    insert(perceptions[i], current_, j->second);
+                    insert(PERCEPTIONS[i], current_, j->second);
             }
-            insert(safe, current_, false);
+            insert(SAFE, current_, false);
         }
-        insert(visited, current_, true);
+        insert(VISITED, current_, true);
         resolve();
     }
+    reviewGameStatus();
 }
 
 void BaseKnowledge::insert(const std::string &perception, Coordinate* location, bool value)
@@ -68,7 +69,7 @@ bool BaseKnowledge::coordinateExistsForPerception(const std::string &perception,
 
 bool BaseKnowledge::isCoordinateVisited(Coordinate* current)
 {
-    return coordinateExistsForPerception(visited, current) && bc_[visited][current];
+    return coordinateExistsForPerception(VISITED, current) && bc_[VISITED][current];
 }
 
 Coordinate* BaseKnowledge::getProbablySafe()
@@ -88,35 +89,35 @@ Coordinate* BaseKnowledge::getSafe()
 
 bool BaseKnowledge::isCoordinateProbablySafe(Coordinate* current)
 {
-    bool noHasWumpus = coordinateExistsForPerception(BaseKnowledge::wumpus, current) && !bc_[wumpus][current];
-    bool noHasPit = coordinateExistsForPerception(BaseKnowledge::pit, current) && !bc_[pit][current];
+    bool noHasWumpus = coordinateExistsForPerception(BaseKnowledge::WUMPUS, current) && !bc_[WUMPUS][current];
+    bool noHasPit = coordinateExistsForPerception(BaseKnowledge::PIT, current) && !bc_[PIT][current];
     return noHasPit && noHasWumpus;
 }
 
 bool BaseKnowledge::isCoordinatePossiblySafe(Coordinate* current)
 {
-    bool hasWumpus = coordinateExistsForPerception(BaseKnowledge::wumpus, current) && bc_[wumpus][current];
-    bool hasPit = coordinateExistsForPerception(BaseKnowledge::pit, current) && bc_[pit][current];
+    bool hasWumpus = coordinateExistsForPerception(BaseKnowledge::WUMPUS, current) && bc_[WUMPUS][current];
+    bool hasPit = coordinateExistsForPerception(BaseKnowledge::PIT, current) && bc_[PIT][current];
     return !(hasPit || hasWumpus);
 }
 
 bool BaseKnowledge::isCoordinateSafe(Coordinate* current)
 {
-    return coordinateExistsForPerception(BaseKnowledge::safe, current) && bc_[safe][current];;
+    return coordinateExistsForPerception(BaseKnowledge::SAFE, current) && bc_[SAFE][current];;
 }
 
 Coordinate* BaseKnowledge::getSafe(bool (BaseKnowledge::*isCoordinateSafe)(Coordinate*))
 {
-    Coordinate* safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::east);
+    Coordinate* safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::EAST);
     if(nullptr != safeCoordinate)
         return safeCoordinate;
-    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::west);
+    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::WEST);
     if(nullptr != safeCoordinate)
         return safeCoordinate;
-    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::north);
+    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::NORTH);
     if(nullptr != safeCoordinate)
         return safeCoordinate;
-    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::south);
+    safeCoordinate = getSafeCoordinateForReference(isCoordinateSafe, Coordinate::SOUTH);
     if(nullptr != safeCoordinate)
         return safeCoordinate;
     std::set<Coordinate*> coordinates = getAllCoordinatesInBc();
@@ -144,11 +145,11 @@ Coordinate* BaseKnowledge::getSafeCoordinateForReference(bool (BaseKnowledge::*i
 
 void BaseKnowledge::resolve()
 {
-    if((!coordinateExistsForPerception(stink, current_) || !bc_[stink][current_])
-       && (!coordinateExistsForPerception(wind, current_) || !bc_[wind][current_]))
+    if(( !coordinateExistsForPerception(STINK, current_) || !bc_[STINK][current_])
+       && ( !coordinateExistsForPerception(WIND, current_) || !bc_[WIND][current_]))
         markAsEmpty(current_);
-    infer(stink, wumpus);
-    infer(wind, pit);
+    infer(STINK, WUMPUS);
+    infer(WIND, PIT);
 }
 
 void BaseKnowledge::infer(const std::string& perception, const std::string& known)
@@ -176,12 +177,12 @@ void BaseKnowledge::checkCoordinateCorner(const std::string& perception, const s
             if(horizontalSafe)
             {
                 insert(known, verticalAdjacent, true);
-                insert(safe, verticalAdjacent, false);
+                insert(SAFE, verticalAdjacent, false);
             }
             if(verticalSafe)
             {
                 insert(known, horizontalAdjacent, true);
-                insert(safe, verticalAdjacent, false);
+                insert(SAFE, verticalAdjacent, false);
             }
         }
     }
@@ -189,11 +190,11 @@ void BaseKnowledge::checkCoordinateCorner(const std::string& perception, const s
 
 void BaseKnowledge::markAsEmpty(Coordinate* current)
 {
-    insert(safe, current, true);
-    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::north);
-    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::south);
-    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::west);
-    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::east);
+    insert(SAFE, current, true);
+    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::NORTH);
+    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::SOUTH);
+    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::WEST);
+    resolveNeighborhoodByReferenceWhenEmpty(current, Coordinate::EAST);
 }
 
 void BaseKnowledge::resolveNeighborhoodByReferenceWhenEmpty(Coordinate* current, const std::string &reference)
@@ -201,10 +202,10 @@ void BaseKnowledge::resolveNeighborhoodByReferenceWhenEmpty(Coordinate* current,
     Coordinate* neighborhood = current->getNeighborhoodByReference(reference);
     if(neighborhood->isValid())
     {
-        insert(wumpus, neighborhood, false);
-        insert(pit, neighborhood, false);
-        insert(visited, neighborhood, false);
-        insert(safe, neighborhood, true);
+        insert(WUMPUS, neighborhood, false);
+        insert(PIT, neighborhood, false);
+        insert(VISITED, neighborhood, false);
+        insert(SAFE, neighborhood, true);
     }
 }
 
@@ -235,7 +236,31 @@ Maze BaseKnowledge::getMaze()
         for(int j = 0 ; j < size_ ; ++j)
             maze[i].push_back(false);
     }
-    for(auto i = bc_[visited].cbegin() ; i != bc_[visited].cend() ; ++i)
+    for(auto i = bc_[VISITED].cbegin() ; i != bc_[VISITED].cend() ; ++i)
         maze[i->first->x][i->first->y] = i->second;
     return maze;
+}
+
+void BaseKnowledge::reviewGameStatus()
+{
+    bool diedByWumpus = coordinateExistsForPerception(WUMPUS, current_) && bc_[WUMPUS][current_];
+    bool diedByPit = coordinateExistsForPerception(PIT, current_) && bc_[PIT][current_];
+    if(diedByPit || diedByWumpus)
+        status_ = OVER;
+    else
+    {
+        bool won = coordinateExistsForPerception(GOLD, current_) && bc_[GOLD][current_];
+        if(won)
+            status_ = WIN;
+    }
+}
+
+bool BaseKnowledge::isGameOver()
+{
+    return status_ == OVER;
+}
+
+bool BaseKnowledge::isGameWon()
+{
+    return status_ == WIN;
 }

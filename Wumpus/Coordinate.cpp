@@ -5,11 +5,11 @@
 #include <algorithm>
 #include "Coordinate.h"
 
-const std::string Coordinate::north = "NORTH";
-const std::string Coordinate::east = "EAST";
-const std::string Coordinate::south = "SOUTH";
-const std::string Coordinate::west = "WEST";
-const std::string Coordinate::invalid = "INVALID";
+const std::string Coordinate::NORTH = "NORTH";
+const std::string Coordinate::EAST = "EAST";
+const std::string Coordinate::SOUTH = "SOUTH";
+const std::string Coordinate::WEST = "WEST";
+const std::string Coordinate::INVALID = "INVALID";
 int Coordinate::size = 0;
 std::vector<Coordinate*> Coordinate::coordinates_;
 
@@ -21,10 +21,12 @@ bool Coordinate::operator==(const Coordinate& a) const
 {
     return x == a.x && y == a.y;
 }
+
 bool Coordinate::operator<(const Coordinate& a) const
 {
     return x < a.x && y < a.y;
 }
+
 bool Coordinate::isValid()
 {
     return x >= 0 && y >= 0 && x < Coordinate::size && y < Coordinate::size;
@@ -32,29 +34,30 @@ bool Coordinate::isValid()
 
 std::string Coordinate::getReference(Coordinate* coordinate) const
 {
-    std::string relativity = invalid;
+    std::string relativity = INVALID;
     if(coordinate->x == x)
-        relativity = (coordinate->y > y) ? north : south;
+        relativity = (coordinate->y > y) ? NORTH : SOUTH;
     if(coordinate->y == y)
-        relativity = (coordinate->x > x) ? east : west;
+        relativity = (coordinate->x > x) ? EAST : WEST;
     return relativity;
 }
 
 Coordinate* Coordinate::getNeighborhoodByReference(const std::string &reference) const
 {
     Coordinate* neighborhood = getCoordinate(-1, -1);;
-    if(reference == north)
+    if(reference == NORTH)
         neighborhood = getCoordinate(x, y + 1);
-    else if(reference == south)
+    else if(reference == SOUTH)
         neighborhood = getCoordinate(x, y - 1);
-    else if(reference == east)
+    else if(reference == EAST)
         neighborhood = getCoordinate(x + 1, y);
-    else if(reference == west)
+    else if(reference == WEST)
         neighborhood = getCoordinate(x - 1, y);
     return neighborhood;
 }
 
-std::string Coordinate::to_string() {
+std::string Coordinate::to_string()
+{
     return "[" + std::to_string(x) + ", " + std::to_string(y) + "]";
 }
 

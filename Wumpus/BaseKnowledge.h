@@ -15,17 +15,23 @@
 
 typedef std::map<Coordinate*, bool> CoordinateMap;
 typedef std::map<std::string, bool> PerceptionMap;
+typedef enum
+{
+    ONGOING,
+    WIN,
+    OVER
+} GameStatus;
 class BaseKnowledge
 {
 public:
-    const static std::string wumpus;
-    const static std::string stink;
-    const static std::string pit;
-    const static std::string wind;
-    const static std::string gold;
-    const static std::string visited;
-    const static std::string safe;
-    const static std::vector<std::string> perceptions;
+    const static std::string WUMPUS;
+    const static std::string STINK;
+    const static std::string PIT;
+    const static std::string WIND;
+    const static std::string GOLD;
+    const static std::string VISITED;
+    const static std::string SAFE;
+    const static std::vector<std::string> PERCEPTIONS;
 
     BaseKnowledge(int size);
     void tell(const Space& current);
@@ -34,6 +40,8 @@ public:
     Coordinate* getSafe();
     Coordinate* genRandomMove();
     Maze getMaze();
+    bool isGameOver();
+    bool isGameWon();
 private:
     void resolve();
     void infer(const std::string& perception, const std::string& known);
@@ -50,11 +58,13 @@ private:
     void markAsEmpty(Coordinate* current);
     void resolveNeighborhoodByReferenceWhenEmpty(Coordinate* current, const std::string &reference);
     std::set<Coordinate*> getAllCoordinatesInBc();
+    void reviewGameStatus();
 
     int size_;
     std::map<std::string, CoordinateMap> bc_;
     std::map<Coordinate*, PerceptionMap> bcPerCoordinate_;
     Coordinate* current_;
+    GameStatus status_;
 
 };
 
